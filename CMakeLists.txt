@@ -1,6 +1,6 @@
 ###    (V) (°,,,°) (V)     <><     (V) (°,,,°) (V)    <><     (V) (°,,,°) (V)
 # Top-level CMakeLists.txt build file for the VIAME super-build and project
-##  ) (V)    <><     (V) (°,,,°) (V)     <><     (V) (°,,,°) (V)    <>< 
+##  ) (V)    <><     (V) (°,,,°) (V)     <><     (V) (°,,,°) (V)    <><
 
 cmake_minimum_required( VERSION 3.13.0 )
 set( CMAKE_CXX_STANDARD 17 )
@@ -36,7 +36,7 @@ endif()
 list( INSERT CMAKE_MODULE_PATH 0
       "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
       "${KWIVER_CMAKE_DIR}" )
- 
+
 ###
 # Add other common paths usable throughout all CMakeLists files
 ##
@@ -629,6 +629,7 @@ if( VIAME_ENABLE_PYTHON )
 
     if( VIAME_ENABLE_PYTHON-INTERNAL )
       set( ENV{PYTHONPATH} "${VIAME_PYTHON_PATH};$ENV{PYTHONPATH}" )
+      list( APPEND PYTHON_DEP_ENV_VARS "PYTHONHOME=${VIAME_PYTHON_USERBASE}" )
     else()
       if( EXISTS "${PYTHON_INCLUDE_DIRS}" )
         set( ADJ_INCLUDE_PATH "${ADJ_INCLUDE_PATH};${PYTHON_INCLUDE_DIRS}" )
@@ -645,7 +646,6 @@ if( VIAME_ENABLE_PYTHON )
 
     list( APPEND PYTHON_DEP_ENV_VARS "INCLUDE=${ADJ_INCLUDE_PATH}" )
     list( APPEND PYTHON_DEP_ENV_VARS "LIB=${ADJ_LIBRARY_PATH}" )
-    list( APPEND PYTHON_DEP_ENV_VARS "PYTHONHOME=${VIAME_PYTHON_USERBASE}" )
     list( APPEND PYTHON_DEP_ENV_VARS "PYTHONIOENCODING=UTF-8" )
   else()
     set( ADJ_LD_LIB_PATH "${VIAME_INSTALL_PREFIX}/lib:$ENV{LD_LIBRARY_PATH}" )
