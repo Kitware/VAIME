@@ -95,10 +95,13 @@ def translator(offset):
     result[:-1, -1] = offset
     return result
 
-def paste(dest, src, src_to_dest):
+def paste(dest, src, src_to_dest, transparent_black=None):
     """Copy src into dest, transformed as described by src_to_dest, a
     projective matrix that maps a (2D homogeneous) coordinate in src
     to one in dest.
+
+    If transparent_black is true (default false), treat pure black
+    pixels as transparent.
 
     """
     # Sanity checks
@@ -119,9 +122,12 @@ def paste(dest, src, src_to_dest):
     dest_to_src_adj = swap_xy @ dest_to_src_adj @ swap_xy
     oshape = tuple(trans_br - trans_ul + 1)
 
-    mask = sktr.warp(
-        np.ones(src.shape[:2]), dest_to_src_adj, output_shape=oshape,
-    ) > 0.5
+    if transparent_black:
+        # TODO: .astype(float) might not be needed
+        mask = (src[..., :3] != 0).any(2).astype(float)
+    else:
+        mask = np.ones(src.shape[:2])
+    mask = sktr.warp(mask, dest_to_src_adj, output_shape=oshape) > 0.5
     trans = sktr.warp(
         src, dest_to_src_adj, output_shape=oshape,
     )
@@ -131,7 +137,7 @@ def paste(dest, src, src_to_dest):
     dest_slice = dest[tuple(slice(ul, br + 1) for ul, br in zip(trans_ul, trans_br))]
     np.copyto(dest_slice, trans, where=mask[..., np.newaxis])
 
-def paste_many(homogs, ims, im0):
+def paste_many(homogs, ims, im0, transparent_black=None):
     """Given a sequence of homographies, an iterable of images, and a
     template image, produce a mosaic image
 
@@ -142,7 +148,7 @@ def paste_many(homogs, ims, im0):
     for hom, im in zip(homogs, ims):
         assert im.shape[:2] == im_size
         hom = translator(tuple(-x for x in ul)) @ hom
-        paste(dest, im, hom)
+        paste(dest, im, hom, transparent_black=bool(transparent_black))
     return dest
 
 def peek_iterable(it):
@@ -160,6 +166,7 @@ def main(out_file, homogs_and_image_lists, **kwargs):
 def main_multi(
         out_file, homogs_and_lists, *, optimize_fit=None, zoom=None,
         frames=None, start=None, stop=None, step=None, reverse=None,
+        transparent_black=None,
 ):
     def read_image_list(path):
         with open(path) as f:
@@ -200,7 +207,9 @@ def main_multi(
         rel_homogs = fit_homog @ rel_homogs
     if zoom is not None:
         rel_homogs = np.diag([zoom, zoom, 1]) @ rel_homogs
-    skio.imsave(out_file, paste_many(rel_homogs, images, im0))
+    skio.imsave(out_file, paste_many(
+        rel_homogs, images, im0, transparent_black=bool(transparent_black),
+    ))
     () = images  # Finally move the progress bar to 100%
 
 def create_parser():
@@ -211,11 +220,12 @@ def create_parser():
                    ' homography files and paths to files with'
                    ' newline-separated image paths, one pair per camera')
     p.add_argument('--frames', type=int, help='Number of frames represented in output')
+    p.add_argument('--optimize-fit', action='store_true', help='Apply an additional transformation to all images to minimize distortion')
+    p.add_argument('--reverse', action='store_true', help='Render images in reverse order')
     p.add_argument('--start', type=int, metavar='N', help='Ignore first N frames')
     p.add_argument('--stop', type=int, metavar='N', help='Ignore frames after the Nth')
     p.add_argument('--step', type=int, metavar='N', help='Write every Nth frame')
-    p.add_argument('--reverse', action='store_true', help='Render images in reverse order')
-    p.add_argument('--optimize-fit', action='store_true', help='Apply an additional transformation to all images to minimize distortion')
+    p.add_argument('--transparent-black', action='store_true', help='Treat black in input images as transparent')
     p.add_argument('--zoom', type=float, metavar='Z', help='Scale the output image by a factor of Z')
     return p
 
