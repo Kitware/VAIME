@@ -1,0 +1,13 @@
+process read :: detected_object_input
+  file_name = input.coco.json
+  reader:type = DetectedObjectSetInputCoco
+
+process write :: detected_object_output
+  file_name = out.csv
+  writer:type = viame_csv
+
+connect from read.detected_object_set
+     	to write.detected_object_set
+
+connect from read.image_file_name
+     	to write.image_file_name
