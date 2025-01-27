@@ -14,7 +14,7 @@ if( WIN32 )
   string( REPLACE ";" "----" VIAME_EXECUTABLES_PATH "${VIAME_EXECUTABLES_PATH}" )
 endif()
 
-if( VIAME_SYMLINK_PYTHON )
+if( VIAME_PYTHON_SYMLINK )
   set( KEYPOINTGUI_PIP_CMD
     pip install --user -e . )
 else()

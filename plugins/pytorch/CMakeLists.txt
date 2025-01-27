@@ -54,6 +54,20 @@ if( VIAME_ENABLE_PYTORCH-NETHARN )
 
 endif()
 
+if (VIAME_ENABLE_ONNX AND VIAME_ENABLE_DARKNET AND VIAME_ENABLE_PYTORCH-MMDET)
+
+  kwiver_add_python_module(
+    ${CMAKE_CURRENT_SOURCE_DIR}/convert_to_onnx_process.py
+    processes
+    OnnxConverter)
+
+  kwiver_add_python_module(
+    ${CMAKE_CURRENT_SOURCE_DIR}/onnx_conversion_tools/crcnn2onnx.py
+    arrows/pytorch
+    crcnn2onnx)
+
+endif()
+
 if( VIAME_ENABLE_PYTORCH-MDNET )
 
   add_subdirectory( mdnet )
@@ -89,11 +103,20 @@ if( VIAME_ENABLE_LEARN )
       ${CMAKE_CURRENT_SOURCE_DIR}/remax_dino_detector.py
       arrows/pytorch
       remax_dino_detector )
-  
+
   kwiver_add_python_module(
       ${CMAKE_CURRENT_SOURCE_DIR}/remax_dino_trainer.py
       arrows/pytorch
       remax_dino_trainer )
-  
-  
+
+
+endif()
+
+if( VIAME_ENABLE_PYTORCH-SAM )
+
+    kwiver_add_python_module(
+      ${CMAKE_CURRENT_SOURCE_DIR}/sam2_refiner.py
+      arrows/pytorch
+      sam2_refiner )
+
 endif()

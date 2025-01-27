@@ -4,10 +4,10 @@
 set -x
 
 # System Deps
-./viame/cmake/linux_install_deps_ubuntu.sh
+./viame/cmake/build_server_ubuntu_deps.sh
 
 # Install CMAKE
-./viame/cmake/linux_build_and_install_cmake.sh
+./viame/cmake/build_server_linux_cmake.sh
 
 # Update VIAME sub git deps
 cd /viame/
@@ -26,7 +26,6 @@ cmake ../ -DCMAKE_BUILD_TYPE:STRING=Release \
 -DVIAME_BUILD_DEPENDENCIES:BOOL=ON \
 -DVIAME_FIXUP_BUNDLE:BOOL=ON \
 -DVIAME_ENABLE_BURNOUT:BOOL=OFF \
--DVIAME_ENABLE_CAFFE:BOOL=OFF \
 -DVIAME_ENABLE_CUDA:BOOL=ON \
 -DVIAME_ENABLE_CUDNN:BOOL=ON \
 -DVIAME_ENABLE_DIVE:BOOL=ON \
@@ -42,10 +41,10 @@ cmake ../ -DCMAKE_BUILD_TYPE:STRING=Release \
 -DVIAME_ENABLE_OPENCV:BOOL=ON \
 -DVIAME_OPENCV_VERSION:STRING=3.4.0 \
 -DVIAME_ENABLE_PYTHON:BOOL=ON \
--DVIAME_ENABLE_PYTHON-INTERNAL:BOOL=ON \
--DVIAME_PYTHON_VERSION:STRING=3.6.15 \
+-DVIAME_PYTHON_BUILD_FROM_SOURCE:BOOL=ON \
+-DVIAME_PYTHON_VERSION:STRING=3.10.4 \
 -DVIAME_ENABLE_PYTORCH:BOOL=ON \
--DVIAME_ENABLE_PYTORCH-INTERNAL:BOOL=ON \
+-DVIAME_PYTORCH_BUILD_FROM_SOURCE:BOOL=ON \
 -DVIAME_ENABLE_PYTORCH-MMDET:BOOL=ON \
 -DVIAME_ENABLE_PYTORCH-NETHARN:BOOL=ON \
 -DVIAME_ENABLE_PYTORCH-PYSOT:BOOL=ON \
@@ -59,7 +58,7 @@ cmake ../ -DCMAKE_BUILD_TYPE:STRING=Release \
 -DVIAME_ENABLE_DARKNET:BOOL=ON 
 
 # Build VIAME, pipe output to file
-../cmake/linux_binary_build_cu11.sh > build_log.txt 2>&1
+../cmake/build_server_linux_build.sh > build_log.txt 2>&1
 
 # Output check statments
 if grep -q "Built target viame" build_log.txt; then

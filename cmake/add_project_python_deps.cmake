@@ -14,10 +14,10 @@
 # Core requirements used for building certain libraries
 set( VIAME_PYTHON_BASIC_DEPS "wheel" "ordered_set" "cython<3.0.0" )
 
-if( VIAME_FIXUP_BUNDLE )
+if( VIAME_FIXUP_BUNDLE AND Python_VERSION VERSION_LESS "3.8" )
   list( APPEND VIAME_PYTHON_BASIC_DEPS "numpy==1.19.3" )
 else()
-  list( APPEND  VIAME_PYTHON_BASIC_DEPS "numpy<=1.23.5" )
+  list( APPEND  VIAME_PYTHON_BASIC_DEPS "numpy<=1.25.2" )
 endif()
 
 if( VIAME_BUILD_TESTS )
@@ -32,8 +32,8 @@ if( ( WIN32 OR Python_VERSION VERSION_LESS "3.8" )
 endif()
 
 # For scoring and plotting
-list( APPEND VIAME_PYTHON_BASIC_DEPS "kiwisolver==1.2.0" )
-list( APPEND VIAME_PYTHON_BASIC_DEPS "matplotlib<=3.5.1" )
+list( APPEND VIAME_PYTHON_BASIC_DEPS "kiwisolver<=1.4.7" )
+list( APPEND VIAME_PYTHON_BASIC_DEPS "matplotlib<=3.6.2" )
 
 # For netharn and mmdet de-pickle on older versions
 if( Python_VERSION VERSION_LESS "3.8" )
@@ -48,13 +48,13 @@ endif()
 list( APPEND VIAME_PYTHON_BASIC_DEPS "map_boxes" "ensemble_boxes" )
 
 if( Python_VERSION VERSION_LESS "3.9" )
-  list( APPEND VIAME_PYTHON_BASIC_DEPS  "llvmlite==0.31.0" "numba==0.47" )
+  list( APPEND VIAME_PYTHON_BASIC_DEPS "llvmlite==0.31.0" "numba==0.47" )
 else()
-  list( APPEND VIAME_PYTHON_BASIC_DEPS  "llvmlite==0.40.0" "numba==0.57" )
+  list( APPEND VIAME_PYTHON_BASIC_DEPS "llvmlite==0.43.0" "numba==0.60" )
 endif()
 
 # For pytorch building
-if( VIAME_ENABLE_PYTORCH-INTERNAL )
+if( VIAME_PYTORCH_BUILD_FROM_SOURCE )
   list( APPEND VIAME_PYTHON_BASIC_DEPS "typing-extensions" "bs4" )
 endif()
 
@@ -101,7 +101,7 @@ if( ( WIN32 OR NOT VIAME_ENABLE_OPENCV ) AND
   endif()
 endif()
 
-if( VIAME_ENABLE_KEYPOINTGUI )
+if( VIAME_ENABLE_KEYPOINT )
   list( APPEND VIAME_PYTHON_BASIC_DEPS "msgpack" )
 endif()
 
@@ -109,7 +109,7 @@ if( VIAME_ENABLE_PYTORCH )
   if( Python_VERSION VERSION_LESS "3.10" )
     list( APPEND VIAME_PYTHON_BASIC_DEPS "scikit-image==0.16.2" )
   else()
-    list( APPEND VIAME_PYTHON_BASIC_DEPS "scikit-image==0.19.2" )
+    list( APPEND VIAME_PYTHON_BASIC_DEPS "scikit-image==0.24.0" )
   endif()
 endif()
 
@@ -118,7 +118,7 @@ if( VIAME_ENABLE_PYTORCH-MMDET OR VIAME_ENABLE_PYTORCH-NETHARN )
 endif()
 
 if( VIAME_ENABLE_PYTORCH-NETHARN AND VIAME_ENABLE_GDAL )
-  if( WIN32 )
+  if( WIN32 AND Python_VERSION VERSION_LESS "3.8" )
     list( APPEND VIAME_PYTHON_BASIC_DEPS "gdal==2.2.3" )
   else()
     list( APPEND VIAME_PYTHON_BASIC_DEPS "gdal" )
@@ -126,9 +126,16 @@ if( VIAME_ENABLE_PYTORCH-NETHARN AND VIAME_ENABLE_GDAL )
 endif()
 
 if( VIAME_ENABLE_OPENCV OR VIAME_ENABLE_PYTORCH-NETHARN )
-  list( APPEND VIAME_PYTHON_BASIC_DEPS "ubelt<=1.2.3" "pygments" "bezier==2020.1.14" )
-  list( APPEND VIAME_PYTHON_BASIC_DEPS "ndsampler==0.6.7" "kwcoco==0.2.31" "pandas<=1.5.3" )
-  list( APPEND VIAME_PYTHON_BASIC_DEPS "imageio==2.15.0" "networkx<=2.8.8" )
+  list( APPEND VIAME_PYTHON_BASIC_DEPS "ubelt<=1.3.7" "ndsampler<=0.8.0" "pygments" )
+  list( APPEND VIAME_PYTHON_BASIC_DEPS "networkx<=2.8.8" "pandas<=1.5.3" )
+
+  if( Python_VERSION VERSION_LESS "3.10" )
+    list( APPEND VIAME_PYTHON_BASIC_DEPS "imageio==2.15.0" "kwcoco==0.2.31" )
+    list( APPEND VIAME_PYTHON_BASIC_DEPS "bezier==2020.1.14" )
+  else()
+    list( APPEND VIAME_PYTHON_BASIC_DEPS "imageio==2.36.0" "kwcoco==0.8.5" )
+    list( APPEND VIAME_PYTHON_BASIC_DEPS "colormath" )
+  endif()
 endif()
 
 if( Python_VERSION VERSION_LESS "3.7" AND
@@ -136,7 +143,7 @@ if( Python_VERSION VERSION_LESS "3.7" AND
   list( APPEND VIAME_PYTHON_BASIC_DEPS "tensorboardX<=2.6.0" )
 endif()
 
-if( VIAME_ENABLE_PYTORCH AND VIAME_ENABLE_PYTORCH-INTERNAL )
+if( VIAME_ENABLE_PYTORCH AND VIAME_PYTORCH_BUILD_FROM_SOURCE )
   list( APPEND VIAME_PYTHON_BASIC_DEPS "pyyaml" )
 endif()
 
@@ -148,7 +155,7 @@ if( VIAME_ENABLE_PYTORCH AND VIAME_ENABLE_PYTORCH-MMDET )
   endif()
 endif()
 
-if( VIAME_ENABLE_PYTHON-INTERNAL AND UNIX )
+if( VIAME_PYTHON_BUILD_FROM_SOURCE AND UNIX )
   list( APPEND VIAME_PYTHON_BASIC_DEPS "backports.lzma" "backports.weakref" )
 endif()
 
@@ -176,7 +183,7 @@ endif()
 set( VIAME_PYTHON_ADV_DEPS python-deps )
 set( VIAME_PYTHON_ADV_DEP_CMDS "custom-install" )
 
-if( VIAME_ENABLE_KEYPOINTGUI )
+if( VIAME_ENABLE_KEYPOINT )
   set( WX_VERSION "4.0.7" )
 
   list( APPEND VIAME_PYTHON_ADV_DEPS wxPython )
@@ -204,52 +211,38 @@ if( VIAME_ENABLE_KEYPOINTGUI )
   endif()
 endif()
 
-if( VIAME_ENABLE_PYTORCH AND NOT VIAME_ENABLE_PYTORCH-INTERNAL )
-  list( APPEND VIAME_PYTHON_ADV_DEPS pytorch )
-
-  set( PYTORCH_VERSION ${VIAME_PYTORCH_VERSION} )
-  set( ARGS_TORCH )
-  set( TORCHVISION_STR "" )
+if( VIAME_ENABLE_PYTORCH AND
+    ( NOT VIAME_PYTORCH_BUILD_FROM_SOURCE OR
+      ( VIAME_ENABLE_PYTORCH-VISION AND NOT VIAME_PYTORCH_BUILD_TORCHVISION ) ) )
 
   if( VIAME_ENABLE_CUDA )
-    set( CUDA_VER_STR "cu${CUDA_VERSION_MAJOR}${CUDA_VERSION_MINOR}" )
+    set( TORCH_CUDA_VER_STR "cu${CUDA_VERSION_MAJOR}${CUDA_VERSION_MINOR}" )
   else()
-    set( CUDA_VER_STR "cpu" )
+    set( TORCH_CUDA_VER_STR "cpu" )
   endif()
 
-  set( PYTORCH_ARCHIVE "https://download.pytorch.org/whl/${CUDA_VER_STR}" )
+  set( PYTORCH_ARCHIVE "https://download.pytorch.org/whl/${TORCH_CUDA_VER_STR}" )
+  set( TORCH_URL_CMD "--extra-index-url ${PYTORCH_ARCHIVE}" )
 
-  if( NOT VIAME_ENABLE_PYTORCH-VIS-INTERNAL )
-    if( PYTORCH_VERSION VERSION_GREATER_EQUAL "1.12.0" )
-      set( TORCHVISION_STR "torchvision==0.13.0" )
-    elseif( PYTORCH_VERSION VERSION_GREATER_EQUAL "1.10.0" )
-      set( TORCHVISION_STR "torchvision==0.12.0" )
-    elseif( PYTORCH_VERSION VERSION_GREATER_EQUAL "1.9.0" )
-      set( TORCHVISION_STR "torchvision==0.10.1" )
-    elseif( PYTORCH_VERSION VERSION_GREATER_EQUAL "1.8.2" )
-      set( TORCHVISION_STR "torchvision==0.9.2" )
-    elseif( PYTORCH_VERSION VERSION_GREATER_EQUAL "1.8.0" )
-      set( TORCHVISION_STR "torchvision==0.9.0" )
-    elseif( PYTORCH_VERSION VERSION_GREATER_EQUAL "1.7.0" )
-      set( TORCHVISION_STR "torchvision==0.8.2" )
-    elseif( PYTORCH_VERSION VERSION_GREATER_EQUAL "1.6.0" )
-      set( TORCHVISION_STR "torchvision==0.7.0" )
-    elseif( PYTORCH_VERSION VERSION_GREATER_EQUAL "1.4.0" )
-      set( TORCHVISION_STR "torchvision==0.5.0" )
+  if( NOT VIAME_PYTORCH_BUILD_FROM_SOURCE )
+    set( PYTORCH_CMD "torch==${VIAME_PYTORCH_VERSION}" )
+
+    list( APPEND VIAME_PYTHON_ADV_DEPS pytorch )
+    list( APPEND VIAME_PYTHON_ADV_DEP_CMDS "${PYTORCH_CMD} ${TORCH_URL_CMD}" )
+  endif()
+
+  if( VIAME_ENABLE_PYTORCH-VISION AND NOT VIAME_PYTORCH_BUILD_TORCHVISION )
+    if( VIAME_PYTORCH_VERSION VERSION_EQUAL "2.5.1" )
+      set( TORCHVISION_CMD "torchvision==0.20.1" )
+    elseif( VIAME_PYTORCH_VERSION VERSION_EQUAL "1.13.1" )
+      set( TORCHVISION_CMD "torchvision==0.13.0" )
     else()
-      set( TORCHVISION_STR "torchvision" )
+      message( FATAL_ERROR "Unknown PyTorch version, unable to select the "
+        "corresponding TorchVision wheel to use" )
     endif()
-  endif()
 
-  # Default case
-  set( ARGS_TORCH "==${PYTORCH_VERSION} ${TORCHVISION_STR} --extra-index-url ${PYTORCH_ARCHIVE}" )
-
-  # Account for either direct link to package or default case
-  string( FIND "${ARGS_TORCH}" "https://" TMP_VAR )
-  if( "${TMP_VAR}" EQUAL 0 )
-    list( APPEND VIAME_PYTHON_ADV_DEP_CMDS "${ARGS_TORCH}" )
-  else()
-    list( APPEND VIAME_PYTHON_ADV_DEP_CMDS "torch${ARGS_TORCH}" )
+    list( APPEND VIAME_PYTHON_ADV_DEPS torchvision )
+    list( APPEND VIAME_PYTHON_ADV_DEP_CMDS "${TORCHVISION_CMD} ${TORCH_URL_CMD}" )
   endif()
 endif()
 
@@ -319,7 +312,7 @@ set( VIAME_PROJECT_LIST ${VIAME_PROJECT_LIST} pymotmetrics )
 
 set( PROJECT_DEPS fletch python-deps )
 
-if( VIAME_SYMLINK_PYTHON )
+if( VIAME_PYTHON_SYMLINK )
   set( LIBRARY_PIP_BUILD_CMD
     ${Python_EXECUTABLE} setup.py build )
   set( LIBRARY_PIP_INSTALL_CMD

@@ -1,6 +1,6 @@
 ###    (V) (°,,,°) (V)     <><     (V) (°,,,°) (V)    <><     (V) (°,,,°) (V)
 # Top-level CMakeLists.txt build file for the VIAME super-build and project
-##  ) (V)    <><     (V) (°,,,°) (V)     <><     (V) (°,,,°) (V)    <>< 
+##  ) (V)    <><     (V) (°,,,°) (V)     <><     (V) (°,,,°) (V)    <><
 
 cmake_minimum_required( VERSION 3.13.0 )
 set( CMAKE_CXX_STANDARD 17 )
@@ -36,7 +36,7 @@ endif()
 list( INSERT CMAKE_MODULE_PATH 0
       "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
       "${KWIVER_CMAKE_DIR}" )
- 
+
 ###
 # Add other common paths usable throughout all CMakeLists files
 ##
@@ -72,15 +72,14 @@ option( VIAME_ENABLE_CUDNN          "Enable CUDNN-Dependent Code"   ON )
 option( VIAME_ENABLE_FFMPEG         "Enable FFMPEG-Dependent Code"  ON )
 
 ###
-# Add core utilities enable flags
+# Add core user interface enable flags
 ##
-option( VIAME_ENABLE_DOCS           "Enable Documentation"          OFF )
-option( VIAME_ENABLE_VIVIA          "Enable Vivia GUIs"             OFF )
-option( VIAME_ENABLE_SEAL           "Enable Seal GUI"               OFF )
+option( VIAME_ENABLE_VIVIA          "Enable VIVIA GUIs"             OFF )
+option( VIAME_ENABLE_SEAL           "Enable SEAL GUI"               OFF )
 option( VIAME_ENABLE_DIVE           "Enable DIVE GUI"               ON )
-option( VIAME_ENABLE_KWANT          "Enable KW Scoring Code"        ON )
+option( VIAME_ENABLE_KEYPOINT       "Enable Keypoint GUI"           OFF )
 
-mark_as_advanced( VIAME_ENABLE_SEAL )
+mark_as_advanced( VIAME_ENABLE_KEYPOINT )
 
 ###
 # Add default-enabled algorithmic plugin enable flags
@@ -90,43 +89,44 @@ option( VIAME_ENABLE_OPENCV         "Enable OpenCV plugins"         ON )
 option( VIAME_ENABLE_PYTHON         "Enable Python plugins"         ON )
 option( VIAME_ENABLE_PYTORCH        "Enable PyTorch plugins"        ON )
 option( VIAME_ENABLE_DARKNET        "Enable Darknet (YOLO) plugin"  ON )
+option( VIAME_ENABLE_ONNX           "Enable ONNX runtime plugins"   OFF )
 
 ###
-# Add secondary plugin enable flags (non-advanced)
+# Add secondary algorithm plugin enable flags (non-advanced)
 ##
-option( VIAME_ENABLE_MATLAB         "Enable Matlab plugins"         OFF )
 option( VIAME_ENABLE_TENSORFLOW     "Enable TensorFlow plugins"     OFF )
 option( VIAME_ENABLE_TENSORRT       "Enable TensorRT plugins"       OFF )
-option( VIAME_ENABLE_SMQTK          "Enable SMQTK plugins"          ON )
+option( VIAME_ENABLE_MATLAB         "Enable Matlab plugins"         OFF )
 
 ###
-# Add secondary plugin enable flags (advanced)
+# Add tertiary plugin enable flags (advanced)
 ##
 option( VIAME_ENABLE_BURNOUT        "Enable Burn-Out plugins"       OFF )
-option( VIAME_ENABLE_CAFFE          "Enable Caffe plugins"          OFF )
 option( VIAME_ENABLE_GDAL           "Enable GDAL image source"      OFF )
 option( VIAME_ENABLE_ITK            "Enable ITK plugins"            OFF )
-option( VIAME_ENABLE_KEYPOINTGUI    "Enable Keypoint GUI"           OFF )
 option( VIAME_ENABLE_LEARN          "Enable LEARN plugins"          OFF )
-option( VIAME_ENABLE_POSTGRESQL     "Enable PostgreSQL plugins"     OFF )
 option( VIAME_ENABLE_SCALLOP_TK     "Enable ScallopTK plugin"       OFF )
+option( VIAME_ENABLE_SMQTK          "Enable SMQTK plugins"          OFF )
 option( VIAME_ENABLE_UW_PREDICTOR   "Enable UW predictor plugin"    OFF )
+
+mark_as_advanced( VIAME_ENABLE_BURNOUT )
+mark_as_advanced( VIAME_ENABLE_GDAL )
+mark_as_advanced( VIAME_ENABLE_ITK )
+mark_as_advanced( VIAME_ENABLE_LEARN )
+mark_as_advanced( VIAME_ENABLE_SCALLOP_TK )
+mark_as_advanced( VIAME_ENABLE_SMQTK )
+mark_as_advanced( VIAME_ENABLE_UW_PREDICTOR )
+
+###
+# Add core utilities enable flags
+##
+option( VIAME_ENABLE_DOCS           "Enable Documentation"          OFF )
+option( VIAME_ENABLE_KWANT          "Enable KWANT Scoring Code"     OFF )
+option( VIAME_ENABLE_POSTGRESQL     "Enable PostgreSQL plugins"     OFF )
 
 if( WIN32 )
   option( VIAME_ENABLE_WIN32GUI     "Enable WIN32 GUI dependency"   ON )
-endif()
 
-mark_as_advanced( VIAME_ENABLE_BURNOUT )
-mark_as_advanced( VIAME_ENABLE_CAFFE )
-mark_as_advanced( VIAME_ENABLE_GDAL )
-mark_as_advanced( VIAME_ENABLE_ITK )
-mark_as_advanced( VIAME_ENABLE_KEYPOINTGUI )
-mark_as_advanced( VIAME_ENABLE_LEARN )
-mark_as_advanced( VIAME_ENABLE_VIAME_ENABLE_POSTGRESQL )
-mark_as_advanced( VIAME_ENABLE_SCALLOP_TK )
-mark_as_advanced( VIAME_ENABLE_UW_PREDICTOR )
-
-if( WIN32 )
   mark_as_advanced( VIAME_ENABLE_WIN32GUI )
 endif()
 
@@ -175,31 +175,52 @@ endif()
 # Additional libraries built on pytorch and versioning
 ##
 if( VIAME_ENABLE_PYTORCH )
-  set( VIAME_PYTORCH_VERSION 1.13.1 CACHE STRING "PyTorch version to use" )
-  set_property( CACHE VIAME_PYTORCH_VERSION PROPERTY STRINGS "1.10.2" "1.11.0" "1.13.1" )
+  set( VIAME_PYTORCH_VERSION 2.5.1 CACHE STRING "PyTorch version to use" )
+  set_property( CACHE VIAME_PYTORCH_VERSION PROPERTY STRINGS "1.13.1" "2.5.1" )
   mark_as_advanced( VIAME_PYTORCH_VERSION )
 
-  set( PYTORCH_INTERNAL_VERSION 1.10.2 CACHE INTERNAL "Internal pytorch version" )
+  set( PYTORCH_INTERNAL_VERSION 2.5.1 CACHE INTERNAL "Internal pytorch version" )
+  set( PYTORCH_MIN_GCC          9.3   CACHE INTERNAL "Minimum GCC version for torch" )
+  set( PYTORCH_MIN_PYTHON_WHL   3.9   CACHE INTERNAL "Minimum python for torch whl" )
+  set( PYTORCH_MIN_PYTHON_BLD   3.8   CACHE INTERNAL "Minimum python for torch build" )
+  set( PYTORCH_MIN_CUDA_BLD     11.0  CACHE INTERNAL "Minimum cuda for torch build" )
+  set( PYTORCH_MIN_CUDNN_BLD    7.0   CACHE INTERNAL "Minimum cudnn for torch build" )
 
-  option( VIAME_ENABLE_PYTORCH-INTERNAL     "Enable internal PyTorch build" OFF )
-  option( VIAME_ENABLE_PYTORCH-VIS-INTERNAL "Enable internal TorchVision"   ON )
-  option( VIAME_ENABLE_PYTORCH-SEGMENT-ANY  "Enable segment PyTorch code"   OFF )
-  option( VIAME_ENABLE_PYTORCH-VIDEO        "Enable video PyTorch code"     OFF )
-  option( VIAME_ENABLE_PYTORCH-MMDET        "Enable mmdet PyTorch code"     ON )
-  option( VIAME_ENABLE_PYTORCH-NETHARN      "Enable netharn PyTorch code"   ON )
-  option( VIAME_ENABLE_PYTORCH-PYSOT        "Enable pysot PyTorch code"     OFF )
-  option( VIAME_ENABLE_PYTORCH-DETECTRON    "Enable detectron PyTorch code" OFF )
-  option( VIAME_ENABLE_PYTORCH-MDNET        "Enable mdnet PyTorch code"     OFF )
+  option( VIAME_ENABLE_PYTORCH-VISION      "Enable TorchVision algorithms"  ON )
+  option( VIAME_ENABLE_PYTORCH-MMDET       "Enable mmdet algorithms"        ON )
+  option( VIAME_ENABLE_PYTORCH-NETHARN     "Enable netharn algorithms"      ON )
+  option( VIAME_ENABLE_PYTORCH-VIDEO       "Enable video algorithms"        OFF )
+  option( VIAME_ENABLE_PYTORCH-PYSOT       "Enable pysot algorithms"        OFF )
+  option( VIAME_ENABLE_PYTORCH-DETECTRON   "Enable detectron2 algorithms"   OFF )
+  option( VIAME_ENABLE_PYTORCH-MDNET       "Enable mdnet algorithms"        OFF )
+  option( VIAME_ENABLE_PYTORCH-SAM         "Enable SAM2 algorithms"         OFF )
 
-  mark_as_advanced( VIAME_ENABLE_PYTORCH-INTERNAL )
-  mark_as_advanced( VIAME_ENABLE_PYTORCH-VIS-INTERNAL )
-  mark_as_advanced( VIAME_ENABLE_PYTORCH-SEGMENT-ANY )
+  mark_as_advanced( VIAME_ENABLE_PYTORCH-VISION )
   mark_as_advanced( VIAME_ENABLE_PYTORCH-VIDEO )
   mark_as_advanced( VIAME_ENABLE_PYTORCH-MMDET )
   mark_as_advanced( VIAME_ENABLE_PYTORCH-NETHARN )
   mark_as_advanced( VIAME_ENABLE_PYTORCH-PYSOT )
   mark_as_advanced( VIAME_ENABLE_PYTORCH-DETECTRON )
   mark_as_advanced( VIAME_ENABLE_PYTORCH-MDNET )
+  mark_as_advanced( VIAME_ENABLE_PYTORCH-SAM )
+
+  option( VIAME_PYTORCH_BUILD_FROM_SOURCE  "Build PyTorch from source"      OFF )
+  option( VIAME_PYTORCH_BUILD_TORCHVISION  "Build TorchVision from source"  ON )
+
+  mark_as_advanced( VIAME_PYTORCH_BUILD_FROM_SOURCE )
+  mark_as_advanced( VIAME_PYTORCH_BUILD_TORCHVISION )
+
+  if( NOT CMAKE_GENERATOR STREQUAL "Ninja" )
+    option( VIAME_PYTORCH_DISABLE_NINJA    "Disable ninja for compilation"  ON )
+    mark_as_advanced( VIAME_PYTORCH_DISABLE_NINJA )
+  endif()
+
+  if( NOT VIAME_ENABLE_PYTORCH )
+    set( VIAME_PYTORCH_BUILD_FROM_SOURCE  OFF CACHE BOOL "Forced off" FORCE )
+  endif()
+  if( NOT VIAME_ENABLE_PYTORCH-VISION )
+    set( VIAME_PYTORCH_BUILD_TORCHVISION  OFF CACHE BOOL "Forced off" FORCE )
+  endif()
 endif()
 
 ###
@@ -220,6 +241,7 @@ if( VIAME_ENABLE_FFMPEG )
   option( VIAME_ENABLE_FFMPEG-X264 "Enable libx264 codec in FFmpeg" ON )
   option( VIAME_ENABLE_FFMPEG-X265 "Enable libx265 codec in FFmpeg" ON )
   option( VIAME_ENABLE_FFMPEG-FFNV "Enable ffnv codec in FFmpeg"    OFF )
+
   mark_as_advanced( VIAME_ENABLE_FFMPEG-X264 )
   mark_as_advanced( VIAME_ENABLE_FFMPEG-X265 )
   mark_as_advanced( VIAME_ENABLE_FFMPEG-FFNV )
@@ -243,10 +265,6 @@ mark_as_advanced( VIAME_BUILD_PLUGINS_DIR )
 # much quicker if just doing development only in VIAME plugins if OFF.
 option( VIAME_FORCEBUILD "Enable force-building of all subpackages" ON )
 mark_as_advanced( VIAME_FORCEBUILD )
-
-# Should we build a version of python within VIAME itself
-option( VIAME_ENABLE_PYTHON-INTERNAL "Build python within VIAME"    OFF )
-mark_as_advanced( VIAME_ENABLE_PYTHON-INTERNAL )
 
 ###
 # Other advanced hidden flags used for disabling core features
@@ -274,35 +292,36 @@ endif()
 ###
 # Add macro-level package build options
 ##
-option( VIAME_BUILD_DEPENDENCIES    "Build all required dependencies in a super-build" ON )
+option( VIAME_BUILD_DEPENDENCIES "Build all required dependencies in a super-build" ON )
+mark_as_advanced( VIAME_BUILD_DEPENDENCIES )
 
-option( VIAME_FIXUP_BUNDLE          "Run fixup bundle on top of generated binaries"    OFF )
+option( VIAME_FIXUP_BUNDLE       "Run fixup bundle on top of generated binaries"    OFF )
 mark_as_advanced( VIAME_FIXUP_BUNDLE )
 
-option( VIAME_CREATE_INSTALLER      "Build a msi prototype installer using wix"        OFF )
+option( VIAME_CREATE_INSTALLER   "Build a msi prototype installer using wix"        OFF )
 mark_as_advanced( VIAME_CREATE_INSTALLER )
 
-option( VIAME_VERSION_RELEASE       "Install release scripts instead of development"   OFF )
+option( VIAME_VERSION_RELEASE    "Install release scripts instead of development"   OFF )
 mark_as_advanced( VIAME_VERSION_RELEASE )
 
 if( VIAME_CREATE_INSTALLER )
-  set( VIAME_FIXUP_BUNDLE ON CACHE BOOL "Flag forced due to create_package enable"     FORCE )
+  set( VIAME_FIXUP_BUNDLE ON CACHE BOOL "Flag forced due to create_package enable"  FORCE )
 endif()
 
 if( VIAME_FIXUP_BUNDLE )
-  set( VIAME_VERSION_RELEASE ON CACHE BOOL "Flag forced due to fixup_bundle enable"    FORCE )
+  set( VIAME_VERSION_RELEASE ON CACHE BOOL "Flag forced due to fixup_bundle enable" FORCE )
 endif()
 
 ###
 # Add extra options
 ##
-option( VIAME_BUILD_CORE_IMAGE_LIBS "Build core image libraries such as libtiff and libjpeg" ON )
+option( VIAME_BUILD_CORE_IMAGE_LIBS "Build core image libraries such as libpng"     ON )
 mark_as_advanced( VIAME_BUILD_CORE_IMAGE_LIBS )
 
-option( VIAME_BUILD_TESTS "Build VIAME and all sub-packages with tests enabled"        OFF )
+option( VIAME_BUILD_TESTS "Build VIAME and all sub-packages with tests enabled"     OFF )
 mark_as_advanced( VIAME_BUILD_TESTS )
 
-option( VIAME_BUILD_CHECKS   "Enable version checks on gcc and python"                 ON )
+option( VIAME_BUILD_CHECKS   "Enable version checks on gcc and python"              ON )
 mark_as_advanced( VIAME_BUILD_CHECKS )
 
 ###
@@ -314,8 +333,7 @@ include( old_version_checks )
 ###
 # Add logic and error checking relating to enable flags
 ##
-if( VIAME_ENABLE_CAFFE OR VIAME_ENABLE_SCALLOP_TK OR VIAME_ENABLE_BURNOUT OR
-    VIAME_ENABLE_DARKNET )
+if( VIAME_ENABLE_SCALLOP_TK OR VIAME_ENABLE_BURNOUT OR VIAME_ENABLE_DARKNET )
   set( VIAME_ENABLE_OPENCV  ON CACHE BOOL "OpenCV required for other projects"  FORCE )
 endif()
 
@@ -362,7 +380,7 @@ if( VIAME_ENABLE_LEARN AND NOT VIAME_ENABLE_CUDA )
   message( FATAL_ERROR "CUDA required for LEARN project currently" )
 endif()
 
-if( VIAME_ENABLE_KEYPOINTGUI AND NOT VIAME_ENABLE_PYTHON )
+if( VIAME_ENABLE_KEYPOINT AND NOT VIAME_ENABLE_PYTHON )
   message( FATAL_ERROR "KEYPOINTGUI requires Python" )
 endif()
 
@@ -407,33 +425,21 @@ if( VIAME_ENABLE_CUDA )
     endif()
   endif()
 
+  if( CUDA_VERSION_MAJOR VERSION_LESS "10" )
+    message( FATAL_ERROR "VIAME does not support CUDA versions under v10.0" )
+  endif()
+
   if( CUDA_VERSION VERSION_EQUAL "10.1" AND CUDA_VERSION_PATCH EQUAL "168" )
     message( FATAL_ERROR "CUDA 10.1.168 has bugs, upgrade to 10.1.264 or above" )
-  endif()
-
-  if( CUDA_VERSION_MAJOR GREATER_EQUAL "10" AND VIAME_ENABLE_CAFFE )
-    message( FATAL_ERROR "Caffe does not support CUDA 10 or above" )
-  endif()
-
-  if( CUDA_VERSION_MAJOR VERSION_LESS "10" AND VIAME_ENABLE_DARKNET )
-    message( FATAL_ERROR "Darknet does not support CUDA versions under v10.0" )
   endif()
 
   option( VIAME_FORCE_CUDA_CSTD98 "Build all cuda code with C++ standard 98" FALSE )
   mark_as_advanced( VIAME_FORCE_CUDA_CSTD98 )
 
-  set( DEF_CUDA_ARCHS "3.5 5.0 5.2 6.0 6.1" )
-  if( CUDA_VERSION VERSION_GREATER "8.5" )
-    set( DEF_CUDA_ARCHS "${DEF_CUDA_ARCHS} 7.0" )
-    if( CUDA_VERSION VERSION_LESS "10.1" )
-      set( DEF_CUDA_ARCHS "${DEF_CUDA_ARCHS} 7.0+PTX" )
-    endif()
-  endif()
-  if( CUDA_VERSION VERSION_GREATER "9.5" )
-    set( DEF_CUDA_ARCHS "${DEF_CUDA_ARCHS} 7.5" )
-    if( CUDA_VERSION VERSION_LESS "11.0" )
-      set( DEF_CUDA_ARCHS "${DEF_CUDA_ARCHS} 7.5+PTX" )
-    endif()
+  set( DEF_CUDA_ARCHS "5.0 5.2 6.0 6.1 7.0 7.5" )
+
+  if( CUDA_VERSION VERSION_LESS "12.0" )
+    set( DEF_CUDA_ARCHS "3.5 ${DEF_CUDA_ARCHS}" )
   endif()
   if( CUDA_VERSION VERSION_GREATER "10.5" )
     set( DEF_CUDA_ARCHS "${DEF_CUDA_ARCHS} 8.0" )
@@ -446,6 +452,9 @@ if( VIAME_ENABLE_CUDA )
     if( CUDA_VERSION VERSION_LESS "12.1" )
       set( DEF_CUDA_ARCHS "${DEF_CUDA_ARCHS} 8.6+PTX" )
     endif()
+  endif()
+  if( CUDA_VERSION VERSION_GREATER "11.7" )
+    set( DEF_CUDA_ARCHS "${DEF_CUDA_ARCHS} 8.9 9.0" )
   endif()
 
   set( CUDA_ARCHITECTURES "${DEF_CUDA_ARCHS}" CACHE STRING "CUDA Architectures" )
@@ -497,7 +506,7 @@ if( VIAME_ENABLE_CUDNN )
   set( CUDNN_ROOT_DIR "" CACHE PATH "CUDNN root folder, leave as blank to auto-detect." )
 
   find_library( CUDNN_LIBRARY REQUIRED
-    NAMES cudnn libcudnn.so libcudnn.so.8 libcudnn.so.7 libcudnn.so.6
+    NAMES cudnn cudnn64 libcudnn.so libcudnn.so.9 libcudnn.so.8
     HINTS ${CUDNN_ROOT_DIR}
           ${CUDNN_ROOT_DIR}/lib
           ${CUDNN_ROOT_DIR}/lib/x64
@@ -536,7 +545,7 @@ if( VIAME_ENABLE_CUDNN )
   endif()
 
   if( NOT EXISTS ${CUDNN_INCLUDE_FILE} )
-    message( ERROR "Unable to locate cudnn.h include header" )
+    message( FATAL_ERROR "Unable to locate cudnn.h include header" )
   endif()
 
   if( CUDNN_ROOT_DIR STREQUAL "/" )
@@ -563,12 +572,20 @@ endif()
 
 if( VIAME_ENABLE_PYTHON )
   if( NOT WIN32 )
-    option( VIAME_SYMLINK_PYTHON "Symlink python files instead of copying." OFF )
-    mark_as_advanced( VIAME_SYMLINK_PYTHON )
+    option( VIAME_PYTHON_SYMLINK "Symlink python files instead of copying." OFF )
+    mark_as_advanced( VIAME_PYTHON_SYMLINK )
   endif()
-  set( KWIVER_SYMLINK_PYTHON ${VIAME_SYMLINK_PYTHON} ) # Required for KWIVER scripts
+  set( KWIVER_SYMLINK_PYTHON ${VIAME_PYTHON_SYMLINK} ) # Required for KWIVER scripts
 
-  if( VIAME_ENABLE_PYTHON-INTERNAL )
+  # Should we build a version of python within VIAME itself
+  option( VIAME_PYTHON_BUILD_FROM_SOURCE "Build the actual CPython interpreter" OFF )
+  mark_as_advanced( VIAME_PYTHON_BUILD_FROM_SOURCE )
+
+  if( VIAME_PYTHON_BUILD_FROM_SOURCE )
+    set( VIAME_PYTHON_VERSION 3.10.4 CACHE STRING "Select the version of Python to build." )
+    set_property( CACHE VIAME_PYTHON_VERSION PROPERTY STRINGS "3.6.15" "3.8.13" "3.10.4" )
+    mark_as_advanced( VIAME_PYTHON_VERSION )
+
     include( setup_internal_python )
   else()
     find_package( Python COMPONENTS Interpreter Development REQUIRED )
@@ -588,6 +605,7 @@ if( VIAME_ENABLE_PYTHON )
 
   set( PYBASE ${VIAME_BUILD_INSTALL_PREFIX}/lib/${VIAME_PYTHON_STRING} )
   set( VIAME_PYTHON_INSTALL ${PYBASE} CACHE INTERNAL "VIAME Python install path" )
+  set( VIAME_PYTHON_PACKAGES ${PYBASE}/site-packages CACHE INTERNAL "Internal site-packages" )
   set( VIAME_PYTHON_USERBASE "${VIAME_INSTALL_PREFIX}" )
 
   # Add PYTHON_PATH variables internal to the VIAME build tree, e.g. things installed
@@ -598,7 +616,7 @@ if( VIAME_ENABLE_PYTHON )
     set( VIAME_PYTHON_PATH
       ${PYBASE};${PYBASE}/site-packages;${PYBASE}/dist-packages
       CACHE INTERNAL ${PYTHON_PATH_DESC} )
-    if( NOT VIAME_ENABLE_PYTHON-INTERNAL )
+    if( NOT VIAME_PYTHON_BUILD_FROM_SOURCE )
       # If using system python on windows, add all possible path locations for
       # python packages in the system install just so they can be used in addition
       # to the ones within the VIAME install tree
@@ -627,8 +645,9 @@ if( VIAME_ENABLE_PYTHON )
     set( ADJ_INCLUDE_PATH "${VIAME_INSTALL_PREFIX}/include;$ENV{INCLUDE}" )
     set( ADJ_LIBRARY_PATH "${VIAME_INSTALL_PREFIX}/lib;${VIAME_INSTALL_PREFIX}/bin;$ENV{LIB}" )
 
-    if( VIAME_ENABLE_PYTHON-INTERNAL )
+    if( VIAME_PYTHON_BUILD_FROM_SOURCE )
       set( ENV{PYTHONPATH} "${VIAME_PYTHON_PATH};$ENV{PYTHONPATH}" )
+      list( APPEND PYTHON_DEP_ENV_VARS "PYTHONHOME=${VIAME_PYTHON_USERBASE}" )
     else()
       if( EXISTS "${PYTHON_INCLUDE_DIRS}" )
         set( ADJ_INCLUDE_PATH "${ADJ_INCLUDE_PATH};${PYTHON_INCLUDE_DIRS}" )
@@ -645,7 +664,6 @@ if( VIAME_ENABLE_PYTHON )
 
     list( APPEND PYTHON_DEP_ENV_VARS "INCLUDE=${ADJ_INCLUDE_PATH}" )
     list( APPEND PYTHON_DEP_ENV_VARS "LIB=${ADJ_LIBRARY_PATH}" )
-    list( APPEND PYTHON_DEP_ENV_VARS "PYTHONHOME=${VIAME_PYTHON_USERBASE}" )
     list( APPEND PYTHON_DEP_ENV_VARS "PYTHONIOENCODING=UTF-8" )
   else()
     set( ADJ_LD_LIB_PATH "${VIAME_INSTALL_PREFIX}/lib:$ENV{LD_LIBRARY_PATH}" )
@@ -669,8 +687,8 @@ if( WIN32 AND VIAME_ENABLE_PYTHON AND CMAKE_CONFIGURATION_TYPES EQUAL "Debug" )
 endif()
 
 # VXL enabled triggers yasm to be built, requiring at least some python
-if( VIAME_ENABLE_VXL AND NOT VIAME_ENABLE_PYTHON-INTERNAL )
-  if( NOT Python_FOUND AND NOT VIAME_ENABLE_PYTHON-INTERNAL )
+if( VIAME_ENABLE_VXL AND NOT VIAME_PYTHON_BUILD_FROM_SOURCE )
+  if( NOT Python_FOUND AND NOT VIAME_PYTHON_BUILD_FROM_SOURCE )
     message( FATAL_ERROR "If VXL is enabled, there must be some python install \
       located on the system to build, even if VIAME_ENABLE_PYTHON is turned off \
       for all other packages. A python binary could not be found. Please install \
@@ -679,56 +697,52 @@ if( VIAME_ENABLE_VXL AND NOT VIAME_ENABLE_PYTHON-INTERNAL )
 endif()
 
 if( VIAME_ENABLE_PYTORCH )
-  if( VIAME_ENABLE_PYTORCH-INTERNAL AND
-      NOT VIAME_PYTORCH_VERSION VERSION_EQUAL "${PYTORCH_INTERNAL_VERSION}" )
-    message( FATAL_ERROR "Only PyTorch ${PYTORCH_INTERNAL_VERSION} support with "
-      "VIAME_ENABLE_PYTORCH-INTERNAL flag set. Either change VIAME_PYTORCH_VERSION "
-      "to ${PYTORCH_INTERNAL_VERSION} or disable the flag VIAME_ENABLE_PYTORCH-INTERNAL." )
+  if( VIAME_PYTORCH_BUILD_FROM_SOURCE )
+    if( NOT VIAME_PYTORCH_VERSION VERSION_EQUAL "${PYTORCH_INTERNAL_VERSION}" )
+      message( FATAL_ERROR "Only PyTorch ${PYTORCH_INTERNAL_VERSION} support with "
+        "VIAME_PYTORCH_BUILD_FROM_SOURCE flag set. Either change VIAME_PYTORCH_VERSION "
+        "to ${PYTORCH_INTERNAL_VERSION} or disable the flag VIAME_PYTORCH_BUILD_FROM_SOURCE." )
+    elseif( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
+            CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${PYTORCH_MIN_GCC}" )
+      message( FATAL_ERROR "VIAME_PYTORCH_BUILD_FROM_SOURCE  requires at least GCC "
+        "${PYTORCH_MIN_GCC} to compile." )
+    elseif( Python_VERSION VERSION_LESS "${PYTORCH_MIN_PYTHON_BLD}" )
+      message( FATAL_ERROR "Building PyTorch, with VIAME_PYTORCH_BUILD_FROM_SOURCE set to ON, "
+        " requires at least python ${PYTORCH_MIN_PYTHON_BLD}." )
+    endif()
+  elseif( VIAME_PYTORCH_VERSION VERSION_EQUAL "${PYTORCH_INTERNAL_VERSION}" )
+    if( Python_VERSION VERSION_LESS "${PYTORCH_MIN_PYTHON_WHL}" )
+      message( FATAL_ERROR "PyTorch installations from pip, with internal building "
+        "turned off and PyTorch ${VIAME_PYTORCH_VERSION}, requires at least python "
+        "${PYTORCH_MIN_PYTHON_WHL}." )
+    endif()
   endif()
   if( VIAME_ENABLE_CUDA )
-    if( VIAME_PYTORCH_VERSION VERSION_EQUAL "1.13.1" AND
-        NOT VIAME_ENABLE_PYTORCH-INTERNAL AND
+    if( VIAME_PYTORCH_VERSION VERSION_EQUAL "2.5.1" AND
+        NOT VIAME_PYTORCH_BUILD_FROM_SOURCE AND
+        NOT ( CUDA_VERSION VERSION_EQUAL "11.8" OR
+              CUDA_VERSION VERSION_EQUAL "12.1" OR
+              CUDA_VERSION VERSION_EQUAL "12.4" ) )
+      message( FATAL_ERROR "CUDA 12.4, 12.1 or 11.8 is required for VIAME_ENABLE_PYTORCH "
+        "with VIAME_PYTORCH_BUILD_FROM_SOURCE off and using PyTorch 2.5.1. Either modify "
+        "VIAME_PYTORCH_VERSION, modify CUDA version, or enable internal pytorch build." )
+    elseif( VIAME_PYTORCH_VERSION VERSION_EQUAL "1.13.1" AND
+        NOT VIAME_PYTORCH_BUILD_FROM_SOURCE AND
         NOT ( CUDA_VERSION VERSION_EQUAL "11.6" OR
               CUDA_VERSION VERSION_EQUAL "11.7" ) )
       message( FATAL_ERROR "CUDA 11.7, or 11.6 is required for VIAME_ENABLE_PYTORCH "
-        "with VIAME_ENABLE_PYTORCH-INTERNAL off and using PyTorch 1.13.1. Either modify "
+        "with VIAME_PYTORCH_BUILD_FROM_SOURCE off and using PyTorch 1.13.1. Either modify "
         "VIAME_PYTORCH_VERSION, modify CUDA version, or enable internal pytorch build." )
-    elseif( VIAME_PYTORCH_VERSION VERSION_EQUAL "1.11.0" AND
-        NOT VIAME_ENABLE_PYTORCH-INTERNAL AND
-        NOT ( CUDA_VERSION VERSION_EQUAL "10.2" OR
-              CUDA_VERSION VERSION_EQUAL "11.3" OR
-              CUDA_VERSION VERSION_EQUAL "11.5" ) )
-      message( FATAL_ERROR "CUDA 11.5, 11.3 or 10.2 is required for VIAME_ENABLE_PYTORCH "
-        "with VIAME_ENABLE_PYTORCH-INTERNAL off and using PyTorch 1.11.0. Either modify "
-        "VIAME_PYTORCH_VERSION, modify CUDA version, or enable internal pytorch build." )
-    elseif( VIAME_PYTORCH_VERSION VERSION_EQUAL "1.10.2" AND
-            NOT VIAME_ENABLE_PYTORCH-INTERNAL AND
-            NOT ( CUDA_VERSION VERSION_EQUAL "10.2" OR
-                  CUDA_VERSION VERSION_EQUAL "11.1" OR
-                  CUDA_VERSION VERSION_EQUAL "11.3" ) )
-      message( FATAL_ERROR "CUDA 11.3, 11.1 or 10.2 is required for VIAME_ENABLE_PYTORCH "
-        "with VIAME_ENABLE_PYTORCH-INTERNAL off and using PyTorch 1.10.2. Either modify "
-        "VIAME_PYTORCH_VERSION, modify CUDA version, or enable internal pytorch build." )
-    elseif( CUDA_VERSION VERSION_LESS "11.0" AND
-            VIAME_ENABLE_PYTORCH-INTERNAL )
-      message( FATAL_ERROR "A CUDA version > 11.0 is required for an internal build "
-        "of pytorch. Either disable VIAME_ENABLE_PYTORCH-INTERNAL or downgrade CUDA." )
-    elseif( CUDA_VERSION VERSION_LESS "10.1" )
-      message( FATAL_ERROR "At least CUDA 10.1 required for VIAME_ENABLE_PYTORCH. "
-        "Upgrading your CUDA version is recommended." )
-    elseif( VIAME_ENABLE_PYTORCH-VIS-INTERNAL AND
-            CUDA_VERSION VERSION_LESS "11.0" )
-      message( FATAL_ERROR "VIAME_ENABLE_PYTORCH-VIS-INTERNAL requires at least CUDA 11.0" )
-    elseif( VIAME_ENABLE_PYTORCH-INTERNAL AND
+    elseif( CUDA_VERSION VERSION_LESS "${PYTORCH_MIN_CUDA_BLD}" AND
+            ( VIAME_PYTORCH_BUILD_FROM_SOURCE OR VIAME_PYTORCH_BUILD_TORCHVISION ) )
+      message( FATAL_ERROR "A CUDA version >= ${PYTORCH_MIN_CUDA_BLD} is required for "
+        "an internal build of PyTorch. Either disable VIAME_PYTORCH_BUILD_FROM_SOURCE or "
+        "upgrade CUDA." )
+    elseif( VIAME_PYTORCH_BUILD_FROM_SOURCE AND
             VIAME_ENABLE_CUDNN AND
-            CUDNN_VERSION_MAJOR VERSION_LESS "7.0.0" )
-      message( FATAL_ERROR "CUDNN 7.0 or higher required for internal pytorch build" )
-    elseif( Python_VERSION VERSION_LESS "3.7.0" AND
-            VIAME_PYTORCH_VERSION VERSION_GREATER_EQUAL "1.11.0" )
-      message( FATAL_ERROR "At least Python 3.7 is required for PyTorch versions "
-        "greater than 1.11.0, either upgrade python or set VIAME_PYTORCH_VERSION "
-        "to be 1.10.2. If you think you have Python3.7+ installed, make sure you "
-        "also have the python header package installed, e.g. python3-dev." )
+            CUDNN_VERSION_MAJOR VERSION_LESS "${PYTORCH_MIN_CUDNN_BLD}" )
+      message( FATAL_ERROR "CUDNN ${PYTORCH_MIN_CUDNN_BLD} or higher required for "
+        "internal pytorch build with VIAME_PYTORCH_BUILD_FROM_SOURCE set to ON" )
     elseif( VIAME_BUILD_CHECKS AND Python_VERSION VERSION_LESS "3.6.2" )
       message( FATAL_ERROR "Only python distributions  >= 3.6.2 are currently "
         "supported with pytorch enabled. Disable VIAME_BUILD_CHECKS to "
@@ -740,15 +754,15 @@ if( VIAME_ENABLE_PYTORCH )
 endif()
 
 if( VIAME_ENABLE_OPENCV )
-  set( VIAME_OPENCV_VERSION 4.2.0 CACHE STRING "Version of OpenCV to use" )
-  set_property( CACHE VIAME_OPENCV_VERSION PROPERTY STRINGS "3.4.0" "4.2.0" "4.5.1" )
+  set( VIAME_OPENCV_VERSION 4.9.0 CACHE STRING "Version of OpenCV to use" )
+  set_property( CACHE VIAME_OPENCV_VERSION PROPERTY STRINGS "3.4.0" "4.2.0" "4.9.0" )
   mark_as_advanced( VIAME_OPENCV_VERSION )
 
   if( CMAKE_COMPILER_IS_GNUCC AND
       CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 12.0 AND
-      VIAME_OPENCV_VERSION VERSION_LESS "4.5" )
+      VIAME_OPENCV_VERSION VERSION_LESS "4.6" )
     message( FATAL_ERROR "GCC compiler version 12 is very new. For compatibility "
-      "reasons, VIAME_OPENCV_VERSION should be set to 4.5.1 or greater."  )
+      "reasons, VIAME_OPENCV_VERSION should be set to 4.6.0 or greater."  )
   endif()
 endif()
 
@@ -806,13 +820,17 @@ if( VIAME_BUILD_DEPENDENCIES )
     include( add_project_python_deps )
   endif()
 
-  # Add optional projects dependend on by other projects
+  # Add optional projects depended on by other projects
   if( VIAME_ENABLE_DARKNET )
     include( add_project_darknet )
   endif()
 
   if( VIAME_ENABLE_BURNOUT )
     include( add_project_burnout )
+  endif()
+
+  if( VIAME_ENABLE_POSTGRESQL )
+    include( add_project_postgres )
   endif()
 
   if( VIAME_ENABLE_SMQTK )
@@ -825,10 +843,6 @@ if( VIAME_BUILD_DEPENDENCIES )
   endif()
 
   # Add other optional libraries
-  if( VIAME_ENABLE_POSTGRESQL )
-    include( add_project_postgres )
-  endif()
-
   if( VIAME_ENABLE_SCALLOP_TK )
     include( add_project_scallop_tk )
   endif()
@@ -853,6 +867,10 @@ if( VIAME_BUILD_DEPENDENCIES )
     include( add_project_tensorrt )
   endif()
 
+  if ( VIAME_ENABLE_ONNX)
+    include( add_project_onnx )
+  endif()
+
   if( VIAME_ENABLE_PYTORCH )
     include( add_project_pytorch )
   endif()
@@ -869,7 +887,7 @@ if( VIAME_BUILD_DEPENDENCIES )
     include( add_project_itk_extras )
   endif()
 
-  if( VIAME_ENABLE_KEYPOINTGUI )
+  if( VIAME_ENABLE_KEYPOINT )
     include( add_project_keypointgui )
   endif()
 

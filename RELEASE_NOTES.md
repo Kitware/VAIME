@@ -1,4 +1,4 @@
-v0.20.5 - 12/15/2024
+v0.21.0 - 1/15/2024
 ===================
 
 
@@ -9,6 +9,24 @@ v0.20.5 - 12/15/2024
 
 
 -Added ability to sweep certain scoring metrics amongst multiple thresholds
+
+
+-Added a number of improvements for stereo measurement and supporting additional camera formats
+
+
+-Added segment anything support for box to polygon conversion
+
+
+-Upgraded default python version in releases from 3.6 to 3.10
+
+
+-Upgraded torch, opencv, fletch versions to current latest
+
+
+-Update release CUDA version from 11.3 to 12.4, requires driver updates for some
+
+
+-Update DIVE interface with some new features (e.g. bulk download, current frame dets only opt)
 
 
 

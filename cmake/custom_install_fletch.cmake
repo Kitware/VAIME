@@ -15,21 +15,6 @@ if( WIN32 )
     CopyFiles( ${VIAME_INSTALL_PREFIX}/x64/*/bin/*.dll ${VIAME_INSTALL_PREFIX}/bin )
     CopyFiles( ${VIAME_INSTALL_PREFIX}/x64/*/lib/*.lib ${VIAME_INSTALL_PREFIX}/lib )
   endif()
-
-  if( VIAME_ENABLE_CAFFE )
-    MoveFiles( ${VIAME_INSTALL_PREFIX}/lib/caffe*.dll ${VIAME_INSTALL_PREFIX}/bin )
-  endif()
-endif()
-
-# Current caffe quick hacks
-if( CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT WIN32 AND VIAME_ENABLE_CAFFE )
-  CreateSymlink( ${VIAME_INSTALL_PREFIX}/lib/libcaffe-d.so
-                 ${VIAME_INSTALL_PREFIX}/lib/libcaffe.so )
-endif()
-
-if( NOT WIN32 AND VIAME_ENABLE_CAFFE )
-  CreateSymlink( ${VIAME_INSTALL_PREFIX}/lib/libleveldb.so
-                 ${VIAME_INSTALL_PREFIX}/lib/libleveldb.so.1 )
 endif()
 
 if( NOT WIN32 AND EXISTS ${VIAME_INSTALL_PREFIX}/lib/libpng.so.16 )
@@ -83,7 +68,7 @@ if( PYTHON_VERSION_STRING )
   endif()
 
   # Required for certain versions of pytorch or netharn
-  if( UNIX AND VIAME_ENABLE_PYTHON-INTERNAL )
+  if( UNIX AND VIAME_PYTHON_BUILD_FROM_SOURCE )
     set( LZMA_FILE "${ROOT_PYTHON_DIR}/lzma.py" )
 
     set( SEARCH_CODE1

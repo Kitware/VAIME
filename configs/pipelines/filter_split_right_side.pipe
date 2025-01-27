@@ -1,0 +1,44 @@
+# Filters input images via debayering them and running basic image filtering
+
+# ============================== GLOBAL PROPERTIES =================================
+# global pipeline config
+#
+config _pipeline:_edge
+  :capacity                                    5
+
+# =============================== INPUT FRAME LIST =================================
+
+process input
+  :: video_input
+  :video_filename                              input_list.txt
+  :frame_time                                  1
+  :exit_on_invalid                             false
+  :video_reader:type                           image_list
+
+  block video_reader:image_list
+    :image_reader:type                         vxl
+  endblock
+
+# ================================== CROP INPUTS ===================================
+
+process split
+  :: split_image
+  :split_image:type                            ocv_horizontally
+
+connect from input.image
+        to   split.image
+
+# ==================================== OUTPUT ======================================
+
+process image_writer
+  :: image_writer
+  :file_name_template                          .png
+  :image_writer:type                           vxl
+
+connect from split.right_image
+        to   image_writer.image
+connect from input.file_name
+        to   image_writer.image_file_name
+
+# -- end of file --
+

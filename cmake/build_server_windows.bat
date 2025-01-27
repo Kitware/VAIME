@@ -12,7 +12,7 @@ SET "GIT_ROOT=C:\Program Files\Git"
 SET "ZIP_ROOT=C:\Program Files\7-Zip"
 SET "ZLIB_ROOT=C:\Program Files\ZLib"
 SET "NVIDIA_ROOT=C:\Program Files (x86)\NVIDIA Corporation"
-SET "CUDA_ROOT=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.3"
+SET "CUDA_ROOT=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4"
 
 SET "WIN_ROOT=C:\Windows"
 SET "WIN32_ROOT=%WIN_ROOT%\System32"
@@ -25,7 +25,7 @@ REM the build and install directories in cmake or the platforms.cmake file
 SET "VIAME_BUILD_DIR=%VIAME_SOURCE_DIR%\build"
 SET "VIAME_INSTALL_DIR=%VIAME_BUILD_DIR%\install"
 
-SET "PYTHON_SUBDIR=lib\python3.6"
+SET "PYTHON_SUBDIR=lib\python3.10"
 SET "ZLIB_BUILD_DIR=%VIAME_BUILD_DIR%\build\src\fletch-build\build\src\ZLib-build"
 
 SET "PATH=%WIN_ROOT%;%WIN32_ROOT%;%WIN32_ROOT%\Wbem;%WIN32_ROOT%\WindowsPowerShell\v1.0;%WIN32_ROOT%\OpenSSH"
@@ -67,22 +67,23 @@ COPY "%ZLIB_BUILD_DIR%\Release\zlib1.dll" %VIAME_INSTALL_DIR%\bin
 
 DEL "%VIAME_INSTALL_DIR%\%PYTHON_SUBDIR%\site-packages\torch\lib\cu*"
 
-COPY "%CUDA_ROOT%\bin\cublas64_11.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cublasLt64_11.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cudart64_110.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cudnn_adv_infer64_8.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cudnn_adv_train64_8.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cudnn_cnn_infer64_8.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cudnn_cnn_train64_8.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cudnn_ops_infer64_8.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cudnn_ops_train64_8.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cudnn64_8.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cufft64_10.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cufftw64_10.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cublas64_12.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cublasLt64_12.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cudart64_12.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cudnn_adv64_9.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cudnn_cnn64_9.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cudnn_engines_precompiled64_9.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cudnn_engines_runtime_compiled64_9.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cudnn_graph64_9.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cudnn_heuristic64_9.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cudnn_ops64_9.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cudnn64_9.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cufft64_11.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cufftw64_11.dll" %VIAME_INSTALL_DIR%\bin
 COPY "%CUDA_ROOT%\bin\curand64_10.dll" %VIAME_INSTALL_DIR%\bin
 COPY "%CUDA_ROOT%\bin\cusolver64_11.dll" %VIAME_INSTALL_DIR%\bin
 COPY "%CUDA_ROOT%\bin\cusolverMg64_11.dll" %VIAME_INSTALL_DIR%\bin
-COPY "%CUDA_ROOT%\bin\cusparse64_11.dll" %VIAME_INSTALL_DIR%\bin
+COPY "%CUDA_ROOT%\bin\cusparse64_12.dll" %VIAME_INSTALL_DIR%\bin
 
 REM -------------------------------------------------------------------------------------------------------
 REM Generate Final Zip File

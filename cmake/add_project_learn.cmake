@@ -43,7 +43,7 @@ set( LEARN_REQ_PIP_CMD
     ${CMAKE_COMMAND} -E env "${PYTHON_DEP_ENV_VARS}"
     ${Python_EXECUTABLE} -m pip install --user )
 
-if( VIAME_SYMLINK_PYTHON )
+if( VIAME_PYTHON_SYMLINK )
   set( LEARN_BUILD_CMD
     ${CMAKE_COMMAND} -E env "${PYTHON_DEP_ENV_VARS}"
     ${Python_EXECUTABLE} -m pip install --user -e . )

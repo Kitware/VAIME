@@ -8,4 +8,4 @@ cd cmake-3.23.1
 make -j$(nproc)
 make install
 cd /
-rm -rf cmake-3.23.1.tar.gz
+rm -rf cmake-3.23.1.tar.gz cmake-3.23.1

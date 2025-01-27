@@ -195,7 +195,7 @@ class DetectedObject(ub.NiceRepr):
         centers.append( ( box_pts[3] + box_pts[0] ) / 2 )
 
         min_x = 1000000
-        max_x = 0
+        max_x = -1000000
 
         for pt in centers:
             if pt[0] < min_x:
@@ -257,7 +257,10 @@ class DetectedObject(ub.NiceRepr):
             # move points from mask coordinates to image coordinates
             if self.bbox_factor != 1.0:
                 hull = hull * self.bbox_factor
-            hull = hull + [[self.bbox.xmin, self.bbox.ymin]]
+            if hull is not None:
+                hull = hull + [[self.bbox.xmin, self.bbox.ymin]]
+            else:
+                hull = [[self.bbox.xmin, self.bbox.ymin]]
         hull = np.round(hull).astype(np.int64)
         return hull
 

@@ -439,6 +439,79 @@ class MeasureProcess(KwiverProcess):
         self.push_to_port_using_trait('detected_object_set2', output2)
         self._base_step()
 
+@tmp_sprokit_register_process(name='add_keypoints_from_oriented_bbox',
+                              doc='Add keypoints to a detection from a obbox on its mask')
+class KeypointProcess(KwiverProcess):
+    """
+    This process gets an image and detection_set as input, extracts each chip,
+    does postprocessing and then sends the extracted chip to the output port.
+    """
+    # --------------------------------------------------------------------------
+    def __init__(self, conf):
+        logger.debug(' ----- ' + self.__class__.__name__ + ' init')
+
+        KwiverProcess.__init__(self, conf)
+
+        required = process.PortFlags()
+        required.add(self.flag_required)
+
+        #self.add_port_trait('detected_object_set',
+        #  'detected_object_set',
+        #  'Detections from camera1')
+
+        #  declare our input ports ( port-name,flags )
+        self.declare_input_port_using_trait('detected_object_set', required)
+
+        #  declare our output ports ( port-name,flags )
+        self.declare_output_port_using_trait('detected_object_set', required)
+
+    # --------------------------------------------------------------------------
+    def _configure(self):
+        logger.debug(' ----- ' + self.__class__.__name__ + ' configure')
+        config = tmp_smart_cast_config(self)
+        self._base_configure()
+        self.prog = ub.ProgIter(verbose=3)
+        self.prog.begin()
+
+    # --------------------------------------------------------------------------
+    def _step(self):
+        logger.debug(' ----- ' + self.__class__.__name__ + ' step')
+        self.prog.step()
+
+        detection_set1 = self.grab_input_using_trait('detected_object_set')
+
+        # Convert back to the format the algorithm understands
+        def _detections_from_vital(detection_set):
+            for vital_det in detection_set:
+                bbox = vital_det.bounding_box
+                coords = [bbox.min_x(), bbox.min_y(),
+                          bbox.max_x(), bbox.max_y()]
+                if vital_det.mask:
+                    mask = vital_det.mask.asarray()
+                else:
+                    mask = None
+                ct_bbox = ctalgo.BoundingBox(coords)
+                ct_det = ctalgo.DetectedObject(ct_bbox, mask)
+                yield ct_det
+
+        detections1 = list(_detections_from_vital(detection_set1))
+
+        # Create output detection vectors
+        output1 = [d for d in detection_set1]
+
+        # Assign all points to detections for now
+        for i in range(len(detection_set1)):
+            if not output1[i].mask:
+                continue
+            head, tail = detections1[i].center_keypoints()
+            output1[i].add_keypoint('head', Point2d(head))
+            output1[i].add_keypoint('tail', Point2d(tail))
+
+        output1 = DetectedObjectSet(output1)
+
+        # Push output detections to port
+        self.push_to_port_using_trait('detected_object_set', output1)
+        self._base_step()
 
 def __sprokit_register__():
 

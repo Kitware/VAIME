@@ -1,0 +1,57 @@
+# Add automatically generated segmentations via SAM2
+
+# ===================== GLOBAL PROPERTIES ========================
+# global pipeline config
+#
+config _pipeline:_edge
+  :capacity                                                      5
+
+config _scheduler
+  :type                                        pythread_per_process
+
+# ====================== INPUT FRAME LIST ========================
+include common_default_input_with_downsampler.pipe
+
+process detection_reader
+  :: detected_object_input
+  :file_name                                        detections.csv
+  :reader:type                                           viame_csv
+  :reader:viame_csv:poly_to_mask                              true
+
+process ensure_rgb
+  :: image_filter
+  :filter:type                                   vxl_convert_image
+
+  block filter:vxl_convert_image
+    :format                                                   byte
+    :force_three_channel                                      true
+  endblock
+
+connect from downsampler.output_1
+        to   ensure_rgb.image
+
+process detection_refiner
+  :: refine_detections
+  :refiner:type                                               sam2
+  #relativepath refiner:sam2:cfg  =            models/sam2_hbp.yaml         
+  :refiner:sam2:cfg             configs/sam2.1/sam2.1_hiera_b+.yaml
+  relativepath refiner:sam2:checkpoint =         models/sam2_hbp.pt
+
+connect from ensure_rgb.image
+        to   detection_refiner.image
+connect from detection_reader.detected_object_set
+        to   detection_refiner.detected_object_set
+
+process detector_writer
+  :: detected_object_output
+  :file_name                               computed_detections.csv
+  :writer:type                                           viame_csv
+  :writer:viame_csv:mask_to_poly_points                         30
+  # Currently commented out and the above is used instead
+  #:writer:viame_csv:mask_to_poly_tol                         0.05
+
+connect from downsampler.output_2
+        to   detector_writer.image_file_name
+connect from detection_refiner.detected_object_set
+        to   detector_writer.detected_object_set
+

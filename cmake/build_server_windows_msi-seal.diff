@@ -13,4 +13,4 @@ index 718d050..e71a201 100644
 +  "-DVIAME_FLETCH_BUILD_DIR=C:/tmp/fl5"
  )
  
- set(platform Windows7)
+ set(platform Windows10)

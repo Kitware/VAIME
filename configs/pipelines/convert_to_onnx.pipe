@@ -1,0 +1,11 @@
+config _scheduler
+  :type                                                 pythread_per_process
+
+process onnx_convert
+  :: OnnxConverter
+  # Path to the trained model: .zip if mmdet, .weights if darknet 
+  model_path = /path/to/model
+  # Input batch size
+  batch_size = 1
+  # Output onnx model path prefix
+  onnx_model_prefix = /path/to/onnx/prefix

@@ -41,33 +41,33 @@ if [ -d "${CUDABASE}" ]; then
 
   # HACK: Symlink CUDA library in pytorch directory
   # For some systems with multiple CUDA 11s installed this is necessary
-  export TORCHBASE=install/lib/python3.6/site-packages/torch
+  export TORCHBASE=install/lib/python3.10/site-packages/torch
   if [ -d "${TORCHBASE}" ]; then
-    ln -s ../../../../libcublas.so.11 ${TORCHBASE}/lib/libcublas.so.11
+    ln -s ../../../../libcublas.so.12 ${TORCHBASE}/lib/libcublas.so.12
   fi
 fi
 
 # HACK: Copy in CUDNN missing .so files not included by
 # create_package, should be removed when this issue is fixed
 if [ -d "${CUDABASE}" ]; then
-  cp -P ${LIBBASE}/libcudnn.so.8* install/lib
-  cp -P ${LIBBASE}/libcudnn_adv_infer.so.8* install/lib
-  cp -P ${LIBBASE}/libcudnn_cnn_infer.so.8* install/lib
-  cp -P ${LIBBASE}/libcudnn_ops_infer.so.8* install/lib
-  cp -P ${LIBBASE}/libcudnn_cnn_train.so.8* install/lib
-  cp -P ${LIBBASE}/libcudnn_ops_train.so.8* install/lib
+  cp -P ${LIBBASE}/libcudnn.so.9* install/lib
+  cp -P ${LIBBASE}/libcudnn_adv_infer.so.9* install/lib
+  cp -P ${LIBBASE}/libcudnn_cnn_infer.so.9* install/lib
+  cp -P ${LIBBASE}/libcudnn_ops_infer.so.9* install/lib
+  cp -P ${LIBBASE}/libcudnn_cnn_train.so.9* install/lib
+  cp -P ${LIBBASE}/libcudnn_ops_train.so.9* install/lib
   rm install/lib/libcudnn.so || true
   rm install/lib/libcudnn_adv_infer.so || true
   rm install/lib/libcudnn_cnn_infer.so || true
   rm install/lib/libcudnn_ops_infer.so || true
   rm install/lib/libcudnn_cnn_train.so || true
   rm install/lib/libcudnn_ops_train.so || true
-  ln -s libcudnn.so.8 install/lib/libcudnn.so
-  ln -s libcudnn_adv_infer.so.8 install/lib/libcudnn_adv_infer.so
-  ln -s libcudnn_cnn_infer.so.8 install/lib/libcudnn_cnn_infer.so
-  ln -s libcudnn_ops_infer.so.8 install/lib/libcudnn_ops_infer.so
-  ln -s libcudnn_cnn_train.so.8 install/lib/libcudnn_cnn_train.so
-  ln -s libcudnn_ops_train.so.8 install/lib/libcudnn_ops_train.so
+  ln -s libcudnn.so.9 install/lib/libcudnn.so
+  ln -s libcudnn_adv_infer.so.9 install/lib/libcudnn_adv_infer.so
+  ln -s libcudnn_cnn_infer.so.9 install/lib/libcudnn_cnn_infer.so
+  ln -s libcudnn_ops_infer.so.9 install/lib/libcudnn_ops_infer.so
+  ln -s libcudnn_cnn_train.so.9 install/lib/libcudnn_cnn_train.so
+  ln -s libcudnn_ops_train.so.9 install/lib/libcudnn_ops_train.so
 fi
 
 # HACK: Copy in other possible library requirements if present

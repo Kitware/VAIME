@@ -2,7 +2,7 @@ To finalize binaries to make an installer:
 ------------------------------------------
 
 1. Do a complete build with:
-  -  VIAME_ENABLE_PYTORCH-INTERNAL 'on' (linux only)
+  -  VIAME_PYTORCH_BUILD_FROM_SOURCE 'on' (linux only)
   - 'release' mode (all OS)
   - 'create_package' cmake build flag on (all OS)
 

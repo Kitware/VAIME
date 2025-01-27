@@ -8,12 +8,12 @@ export VIAME_BUILD_DIR=$VIAME_SOURCE_DIR/build
 export VIAME_INSTALL_DIR=$VIAME_BUILD_DIR/install
 
 # Install system dependencies and use more recent compiler
-$VIAME_SOURCE_DIR/cmake/linux_install_deps_centos7.sh
+$VIAME_SOURCE_DIR/cmake/build_server_centos7_deps.sh
 
-source /opt/rh/devtoolset-7/enable
+source /opt/rh/devtoolset-9/enable
 
 # Install CMAKE
-./viame/cmake/linux_build_and_install_cmake.sh
+./viame/cmake/build_server_linux_cmake.sh
 
 # Update VIAME sub git sources
 cd $VIAME_SOURCE_DIR
@@ -23,16 +23,15 @@ cd build
 
 # Configure Paths [should be removed when no longer necessary by fletch]
 export PATH=$VIAME_INSTALL_DIR/bin:$PATH
-export LD_LIBRARY_PATH=$VIAME_INSTALL_DIR/lib:$VIAME_INSTALL_DIR/lib/python3.6:$LD_LIBRARY_PATH
-export C_INCLUDE_PATH=$VIAME_INSTALL_DIR/include/python3.6m:$C_INCLUDE_PATH
-export CPLUS_INCLUDE_PATH=$VIAME_INSTALL_DIR/include/python3.6m:$CPLUS_INCLUDE_PATH
+export LD_LIBRARY_PATH=$VIAME_INSTALL_DIR/lib:$VIAME_INSTALL_DIR/lib/python3.10:$LD_LIBRARY_PATH
+export C_INCLUDE_PATH=$VIAME_INSTALL_DIR/include/python3.10:$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH=$VIAME_INSTALL_DIR/include/python3.10:$CPLUS_INCLUDE_PATH
 
 # Configure VIAME
 cmake ../ -DCMAKE_BUILD_TYPE:STRING=Release \
 -DVIAME_BUILD_DEPENDENCIES:BOOL=ON \
 -DVIAME_FIXUP_BUNDLE:BOOL=ON \
 -DVIAME_ENABLE_BURNOUT:BOOL=OFF \
--DVIAME_ENABLE_CAFFE:BOOL=OFF \
 -DVIAME_ENABLE_CUDA:BOOL=OFF \
 -DVIAME_ENABLE_CUDNN:BOOL=OFF \
 -DVIAME_ENABLE_DIVE:BOOL=ON \
@@ -49,12 +48,12 @@ cmake ../ -DCMAKE_BUILD_TYPE:STRING=Release \
 -DVIAME_ENABLE_OPENCV:BOOL=ON \
 -DVIAME_OPENCV_VERSION:STRING=3.4.0 \
 -DVIAME_ENABLE_PYTHON:BOOL=ON \
--DVIAME_ENABLE_PYTHON-INTERNAL:BOOL=ON \
--DVIAME_PYTHON_VERSION:STRING=3.6.15 \
+-DVIAME_PYTHON_BUILD_FROM_SOURCE:BOOL=ON \
+-DVIAME_PYTHON_VERSION:STRING=3.10.4 \
 -DVIAME_ENABLE_PYTORCH:BOOL=ON \
--DVIAME_ENABLE_PYTORCH-INTERNAL:BOOL=ON \
--DVIAME_ENABLE_PYTORCH-DISABLE-NINJA=ON \
--DVIAME_PYTORCH_VERSION:STRING=1.10.2 \
+-DVIAME_PYTORCH_BUILD_FROM_SOURCE:BOOL=ON \
+-DVIAME_PYTORCH_DISABLE_NINJA=ON \
+-DVIAME_PYTORCH_VERSION:STRING=2.5.1 \
 -DVIAME_ENABLE_PYTORCH-MMDET:BOOL=ON \
 -DVIAME_ENABLE_PYTORCH-NETHARN:BOOL=ON \
 -DVIAME_ENABLE_PYTORCH-PYSOT:BOOL=OFF \
@@ -68,7 +67,7 @@ cmake ../ -DCMAKE_BUILD_TYPE:STRING=Release \
 -DVIAME_ENABLE_DARKNET:BOOL=ON 
 
 # Build VIAME, pipe output to file
-../cmake/linux_binary_build_cu11.sh > build_log.txt 2>&1
+../cmake/build_server_linux_build.sh > build_log.txt 2>&1
 
 # Output check statments
 if grep -q "Built target viame" build_log.txt; then

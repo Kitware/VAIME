@@ -22,8 +22,6 @@ yum -y groupinstall 'Development Tools'
 yum install -y zip \
 git \
 wget \
-openssl \
-openssl-devel \
 zlib \
 zlib-devel \
 freeglut-devel \
@@ -45,8 +43,5 @@ bzip2 \
 bzip2-devel \
 xz-devel \
 vim \
-devtoolset-7
-
-# Install NINJA for faster builds of some dependencies
-rpm -ivh https://archives.fedoraproject.org/pub/archive/epel/7/x86_64/Packages/n/ninja-build-1.10.2-3.el7.x86_64.rpm
-
+devtoolset-9 \
+perl-IPC-Cmd

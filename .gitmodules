@@ -67,9 +67,6 @@
 [submodule "packages/pytorch-libs/torch2rt"]
 	path = packages/pytorch-libs/torch2rt
 	url = https://github.com/NVIDIA-AI-IOT/torch2trt
-[submodule "packages/pytorch-libs/segment-anything"]
-	path = packages/pytorch-libs/segment-anything
-	url = https://github.com/facebookresearch/segment-anything.git
 [submodule "packages/pytorch-libs/detectron2"]
 	path = packages/pytorch-libs/detectron2
 	url = https://github.com/facebookresearch/detectron2.git
@@ -84,3 +81,12 @@
 [submodule "packages/pymotmetrics"]
 	path = packages/python-utils/pymotmetrics
 	url = https://github.com/VIAME/py-motmetrics.git
+[submodule "packages/pytorch-libs/sam2"]
+	path = packages/pytorch-libs/sam2
+	url = https://github.com/facebookresearch/sam2.git
+[submodule "packages/pytorch-libs/mmdeploy"]
+	path = packages/pytorch-libs/mmdeploy
+	url = https://github.com/open-mmlab/mmdeploy
+[submodule "packages/pytorch-libs/darknet-to-pytorch-onnx"]
+	path = packages/pytorch-libs/darknet-to-pytorch-onnx
+	url = https://gitlab.kitware.com/keu-computervision/ml/darknet-to-pytorch-onnx.git

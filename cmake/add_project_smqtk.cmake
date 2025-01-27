@@ -19,18 +19,27 @@ if( VIAME_ENABLE_CUDA )
   FormatPassdowns( "CUDA" VIAME_CUDA_FLAGS )
 endif()
 
-if( VIAME_SYMLINK_PYTHON )
+if( VIAME_ENABLE_POSTGRESQL AND WIN32 )
+  list( APPEND SMQTK_DEPENDS postgres )
+endif()
+
+set( SMQTK_PIP_CMD )
+set( SMQTK_PIP_OPT )
+
+if( VIAME_PYTHON_SYMLINK )
+  if( VIAME_ENABLE_POSTGRESQL )
+    set( SMQTK_PIP_OPT "[postgres]" )
+  endif()
   set( SMQTK_PIP_CMD
-    pip install --user -e .[postgres] )
+    pip install --user -e .${SMQTK_PIP_OPT} )
 else()
   # This is only required for no symlink install without a -e with older
   # versions of pip, for never versions the above command works with no -e
+  if( VIAME_ENABLE_POSTGRESQL )
+    set( SMQTK_PIP_OPT "\#egg=smqtk[postgres]" )
+  endif()
   set( SMQTK_PIP_CMD
-    pip install --user file://${VIAME_PACKAGES_DIR}/smqtk\#egg=smqtk[postgres] )
-endif()
-
-if( WIN32 )
-  #list( APPEND SMQTK_DEPENDS postgres )
+    pip install --user file://${VIAME_PACKAGES_DIR}/smqtk${SMQTK_PIP_OPT} )
 endif()
 
 set( SMQTK_PYTHON_INSTALL

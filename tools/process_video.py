@@ -1060,8 +1060,7 @@ if __name__ == "__main__" :
     db_is_init, user_select = database_tool.init( log_file=init_log_file, prompt=(not args.no_reset_prompt) )
     if not db_is_init:
       if user_select:
-        log_info( "User decided to not initialize new database, shutting down." + lb2 )
-        sys.exit( 0 )
+        exit_with_error( "User decided to not initialize new database, shutting down." + lb2 )
       elif len( args.log_directory ) > 0:
         exit_with_error( "Unable to initialize database, check " + init_log_file + lb2 +
          "You may have another database running on your system, or ran "

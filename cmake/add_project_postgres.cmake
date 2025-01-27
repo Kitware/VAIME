@@ -9,7 +9,7 @@ if( WIN32 )
   set( VIAME_POSTGRES_DIR ${VIAME_BUILD_PREFIX}/src/postgres )
 
   ExternalProject_Add( postgres
-    DEPENDS kwiver
+    DEPENDS fletch
     URL ${VIAME_POSTGRES_URL}
     URL_MD5 ${VIAME_POSTGRES_MD5}
     DOWNLOAD_DIR ${VIAME_DOWNLOAD_DIR}

@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
 
 USER root
 
@@ -9,6 +9,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get install -y git \
   && git clone https://github.com/VIAME/VIAME.git /viame \ 
+  && cd /viame && git checkout next \
   && cd /viame/cmake \
   && chmod +x build_server_docker_seal.sh \
   && ./build_server_docker_seal.sh
