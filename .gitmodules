@@ -84,3 +84,6 @@
 [submodule "packages/pymotmetrics"]
 	path = packages/python-utils/pymotmetrics
 	url = https://github.com/VIAME/py-motmetrics.git
+[submodule "packages/YOLO"]
+	path = packages/YOLO
+	url = https://github.com/VIAME/YOLO.git

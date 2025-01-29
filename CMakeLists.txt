@@ -1,6 +1,6 @@
 ###    (V) (°,,,°) (V)     <><     (V) (°,,,°) (V)    <><     (V) (°,,,°) (V)
 # Top-level CMakeLists.txt build file for the VIAME super-build and project
-##  ) (V)    <><     (V) (°,,,°) (V)     <><     (V) (°,,,°) (V)    <>< 
+##  ) (V)    <><     (V) (°,,,°) (V)     <><     (V) (°,,,°) (V)    <><
 
 cmake_minimum_required( VERSION 3.13.0 )
 set( CMAKE_CXX_STANDARD 17 )
@@ -36,7 +36,7 @@ endif()
 list( INSERT CMAKE_MODULE_PATH 0
       "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
       "${KWIVER_CMAKE_DIR}" )
- 
+
 ###
 # Add other common paths usable throughout all CMakeLists files
 ##
@@ -187,6 +187,7 @@ if( VIAME_ENABLE_PYTORCH )
   option( VIAME_ENABLE_PYTORCH-VIDEO        "Enable video PyTorch code"     OFF )
   option( VIAME_ENABLE_PYTORCH-MMDET        "Enable mmdet PyTorch code"     ON )
   option( VIAME_ENABLE_PYTORCH-NETHARN      "Enable netharn PyTorch code"   ON )
+  option( VIAME_ENABLE_PYTORCH-MIT-YOLO     "Enable MIT-YOLO PyTorch code"  ON )
   option( VIAME_ENABLE_PYTORCH-PYSOT        "Enable pysot PyTorch code"     OFF )
   option( VIAME_ENABLE_PYTORCH-DETECTRON    "Enable detectron PyTorch code" OFF )
   option( VIAME_ENABLE_PYTORCH-MDNET        "Enable mdnet PyTorch code"     OFF )
