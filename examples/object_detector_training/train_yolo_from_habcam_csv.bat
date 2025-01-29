@@ -11,7 +11,7 @@ SET KWIVER_DEFAULT_LOG_LEVEL=info
 REM Run pipeline
 viame_train_detector.exe ^
   -i training_data_habcam ^
-  -c "%VIAME_INSTALL%/configs/pipelines/train_detector_darknet_yolo_704.adaptive.habcam.conf" ^
+  -c "%VIAME_INSTALL%/configs/pipelines/train_detector_darknet_yolo_704.habcam.conf" ^
   --threshold 0.0
 
 pause
