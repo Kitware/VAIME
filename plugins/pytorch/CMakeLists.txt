@@ -24,6 +24,16 @@ if( VIAME_ENABLE_PYTORCH-MMDET )
 
 endif()
 
+# Common Utilities
+kwiver_add_python_module(
+  ${CMAKE_CURRENT_SOURCE_DIR}/_utils.py
+  arrows/pytorch
+  _utils )
+
+kwiver_add_python_module(
+  ${CMAKE_CURRENT_SOURCE_DIR}/kwcoco_train_detector.py
+  arrows/pytorch
+  kwcoco_train_detector )
 
 if( VIAME_ENABLE_PYTORCH-NETHARN )
 
@@ -52,6 +62,13 @@ if( VIAME_ENABLE_PYTORCH-NETHARN )
     arrows/pytorch
     netharn_utils )
 
+endif()
+
+if( VIAME_ENABLE_PYTORCH-MIT-YOLO )
+  kwiver_add_python_module(
+    ${CMAKE_CURRENT_SOURCE_DIR}/mit_yolo_trainer.py
+    arrows/pytorch
+    mit_yolo_trainer )
 endif()
 
 if (VIAME_ENABLE_ONNX AND VIAME_ENABLE_DARKNET AND VIAME_ENABLE_PYTORCH-MMDET)
@@ -108,7 +125,6 @@ if( VIAME_ENABLE_LEARN )
       ${CMAKE_CURRENT_SOURCE_DIR}/remax_dino_trainer.py
       arrows/pytorch
       remax_dino_trainer )
-
 
 endif()
 

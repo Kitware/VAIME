@@ -90,3 +90,6 @@
 [submodule "packages/pytorch-libs/darknet-to-pytorch-onnx"]
 	path = packages/pytorch-libs/darknet-to-pytorch-onnx
 	url = https://gitlab.kitware.com/keu-computervision/ml/darknet-to-pytorch-onnx.git
+[submodule "packages/YOLO"]
+	path = packages/YOLO
+	url = https://github.com/VIAME/YOLO.git
